@@ -1,0 +1,16 @@
+(library
+ (name monk_oc)
+ (inline_tests)
+ (preprocess
+  (pps ppx_expect ppx_deriving.show)))
+
+(rule
+ (target lexer.ml)
+ (deps lexer.mll)
+ (action
+  (chdir
+   %{workspace_root}
+   (run %{bin:ocamllex} -q -o %{target} %{deps}))))
+
+(menhir
+ (modules parser))
