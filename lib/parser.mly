@@ -4,10 +4,10 @@
 %token <string> STRING
 %token LEFT_BRACE
 %token RIGHT_BRACE
-%token LEFT_BRACK
-%token RIGHT_BRACK
-%token LEFT_CBRACK
-%token RIGHT_CBRACK
+%token LEFT_BRACKET
+%token RIGHT_BRACKET
+%token LEFT_CBRACKET
+%token RIGHT_CBRACKET
 %token RIGHT_ARROW
 %token LEFT_ARROW
 %token EQ
@@ -18,4 +18,14 @@
 %token MORE_EQ
 %token COLON
 %token COMMA
+%token LET
+%token MATCH
+%token IF
+%token ELSE
+%token ELSE_IF
 %token EOF
+%start <Ast.ast option> prog
+%%
+
+prog:
+                | EOF { None}
