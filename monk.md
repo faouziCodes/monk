@@ -255,3 +255,11 @@ B: point := { x = 0; y = 0 }
 In the above code what is the difference between A and B.
 It's obvious in the syntax, but in ctx of the compiler why are the two different.
 
+
+match:  
+
+```rust
+let mid(a, b) = match a, b 
+  | 10, 20 -> 15
+  | 30, 40 -> 35
+```

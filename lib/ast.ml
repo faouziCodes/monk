@@ -1,6 +1,8 @@
-type ast = AExpr of aexpr | AStmt
-and astmt = ALet of aexpr * aexpr | ATypeDef of atypedef
-and atypedef = (aexpr * aexpr) list
+type ast = node list
+and node = AExpr of aexpr | AStmt of astmt | Illegal | EOP
+and astmt = ALet of aident * aexpr | AFunc of aident * paramaters * astmt
+and paramater = aident
+and paramaters = paramater list
 
 and aexpr =
   | AValue of avalue
@@ -8,7 +10,6 @@ and aexpr =
   | ABinary of abinary
   | AMatch of amatch
   | ABlock of ablock
-  | TypeInstance of atypedef
 
 and ablock = astmt list
 and abinary = aexpr * aoperation * aexpr
