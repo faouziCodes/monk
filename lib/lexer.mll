@@ -1,6 +1,5 @@
 {
         open Parser
-
         exception SyntaxError of string
 }
 
@@ -22,6 +21,11 @@ rule read =
         | int { INT(int_of_string (Lexing.lexeme lexbuf)) } 
         | float { FLOAT(float_of_string (Lexing.lexeme lexbuf)) } 
         | id {ID (Lexing.lexeme lexbuf)}
+        | '|' { PIPE }
+        | '+' { PLUS }
+        | '-' { SUB }
+        | '*' { MUL }
+        | '/' {DIV}
         | '('{ LEFT_BRACE }
         | ')'{ RIGHT_BRACE }
         | '['{ LEFT_BRACKET }
