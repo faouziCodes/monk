@@ -5,34 +5,27 @@
 
 let digit = ['0'-'9']
 
-let int = '-'? digit digit*
-
+let int = '-'? ['0'-'9'] digit*
 let frac = '.' digit*
 let float = digit* frac?
-
 let white = [' ' '\t']+
 let newline = '\r' | '\n' | "\r\n"
 let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
 
-rule read =
+rule token =
         parse
-        | white { read lexbuf }
-        | newline { read lexbuf }
-        | int { INT(int_of_string (Lexing.lexeme lexbuf)) } 
-        | float { FLOAT(float_of_string (Lexing.lexeme lexbuf)) } 
-        | id {ID (Lexing.lexeme lexbuf)}
         | '|' { PIPE }
         | '+' { PLUS }
         | '-' { SUB }
         | '*' { MUL }
-        | '/' {DIV}
-        | '('{ LEFT_BRACE }
-        | ')'{ RIGHT_BRACE }
-        | '['{ LEFT_BRACKET }
-        | ']'{ RIGHT_BRACKET }
-        | '{'{ LEFT_CBRACKET }
-        | '}'{ RIGHT_CBRACKET }
-        | "<-"{ LEFT_ARROW }
+        | '/' { DIV }
+        | '(' { LEFT_BRACE }
+        | ')' { RIGHT_BRACE }
+        | '[' { LEFT_BRACKET }
+        | ']' { RIGHT_BRACKET }
+        | '{' { LEFT_CBRACKET }
+        | '}' { RIGHT_CBRACKET }
+        | "<-" { LEFT_ARROW }
         | "->" { RIGHT_ARROW }
         | '=' { EQ }
         | "==" { EQEQ }
@@ -42,15 +35,24 @@ rule read =
         | ">=" { MORE_EQ }
         | ":" { COLON }
         | "," { COMMA }
-        | "LET" { LET }
-        | "MATCH" { MATCH }
-        | "IF" { IF }
-        | "ELSE" { ELSE }
-        | "ELSE_IF" { ELSE_IF }
+        | "let" { LET }
+        | "match" { MATCH }
+        | "if" { IF }
+        | "else" { ELSE }
+        | "elif" { ELSE_IF }
+        | white { token lexbuf }
+        | newline { token lexbuf }
+        | int { INT(int_of_string (Lexing.lexeme lexbuf)) } 
+        | float { FLOAT(float_of_string (Lexing.lexeme lexbuf)) } 
+        | id { ID (Lexing.lexeme lexbuf) }
         | eof { EOF }
+         | '"'
+         { let buffer = Buffer.create 1 in
+           STRING (read_string buffer lexbuf)
+         }
         and read_string buf =
           parse
-          | '"'       { STRING (Buffer.contents buf) }
+          | '"'       {  (Buffer.contents buf) }
           | '\\' '/'  { Buffer.add_char buf '/'; read_string buf lexbuf }
           | '\\' '\\' { Buffer.add_char buf '\\'; read_string buf lexbuf }
           | '\\' 'b'  { Buffer.add_char buf '\b'; read_string buf lexbuf }
