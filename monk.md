@@ -256,10 +256,25 @@ In the above code what is the difference between A and B.
 It's obvious in the syntax, but in ctx of the compiler why are the two different.
 
 
-match:  
+match:
 
 ```rust
-let mid(a, b) = match a, b 
+let mid(a, b) = match a, b
   | 10, 20 -> 15
   | 30, 40 -> 35
 ```
+
+# Engine
+
+## Need:
+
+stores the env variables, free, bound etc. so that we may use them during the rewrite process.
+
+```rust
+type env
+type terms
+eval : env -> terms -> Result ?
+```
+
+Sideeffects?
+
