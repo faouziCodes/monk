@@ -4,6 +4,8 @@ type term =
   | Apply of term * term
 [@@deriving show]
 
+type terms = term list [@@deriving show]
+
 let rec rewrite term pat change =
   match term with
   | term when term = pat -> change

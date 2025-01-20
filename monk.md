@@ -264,6 +264,7 @@ let mid(a, b) = match a, b
   | 30, 40 -> 35
 ```
 
+
 # Engine
 
 ## Need:
@@ -276,5 +277,38 @@ type terms
 eval : env -> terms -> Result ?
 ```
 
-Sideeffects?
+## Codegen/ Evaluation/ Interpretation/ Compilation Pftss
 
+consider the following function
+
+```rust
+let x(x) = x
+
+#run x(10) // result: 10
+```
+
+lets generate some lambda calculus for the above, not using church numerals for now just numbers, I know...
+
+```rust
+let x = \x.x
+
+x 10
+\x.x 10
+\10.10
+10
+```
+
+So that works right.
+
+# Codegen
+
+Take the complex ast and convert it into simple lambda calculus terms
+
+Consider:
+
+```rust
+let x(x) = x
+x(y)
+```
+
+Damn I can really see the compilers are just interpreters argument now.
