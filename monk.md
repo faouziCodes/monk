@@ -256,10 +256,59 @@ In the above code what is the difference between A and B.
 It's obvious in the syntax, but in ctx of the compiler why are the two different.
 
 
-match:  
+match:
 
 ```rust
-let mid(a, b) = match a, b 
+let mid(a, b) = match a, b
   | 10, 20 -> 15
   | 30, 40 -> 35
 ```
+
+
+# Engine
+
+## Need:
+
+stores the env variables, free, bound etc. so that we may use them during the rewrite process.
+
+```rust
+type env
+type terms
+eval : env -> terms -> Result ?
+```
+
+## Codegen/ Evaluation/ Interpretation/ Compilation Pftss
+
+consider the following function
+
+```rust
+let x(x) = x
+
+#run x(10) // result: 10
+```
+
+lets generate some lambda calculus for the above, not using church numerals for now just numbers, I know...
+
+```rust
+let x = \x.x
+
+x 10
+\x.x 10
+\10.10
+10
+```
+
+So that works right.
+
+# Codegen
+
+Take the complex ast and convert it into simple lambda calculus terms
+
+Consider:
+
+```rust
+let x(x) = x
+x(y)
+```
+
+Damn I can really see the compilers are just interpreters argument now.
