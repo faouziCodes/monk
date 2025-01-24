@@ -1,12 +1,12 @@
 %token <int> INT
 %token <float> FLOAT
 %token <string> ID STRING
-%token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_CBRACKET RIGHT_CBRACKET RIGHT_ARROW LEFT_ARROW EQ EQEQ LESS LESS_EQ MORE MORE_EQ COLON COMMA LET MATCH IF ELSE ELSE_IF EOF SUB PLUS MUL DIV PIPE
+%token LEFT_BRACE RIGHT_BRACE LEFT_BRACKET RIGHT_BRACKET LEFT_CBRACKET RIGHT_CBRACKET RIGHT_ARROW LEFT_ARROW EQ EQEQ LESS LESS_EQ MORE MORE_EQ COLON COMMA LET MATCH IF ELSE ELSE_IF EOF SUB PLUS MUL DIV PIPE TRUE FALSE
 
 %left PLUS SUB
 %left MUL DIV
 
-%start <Ast.node list> prog
+%start <Ast.ast> prog
 %%
 
 prog:
@@ -36,12 +36,14 @@ value:
     | f  = FLOAT {  Ast.AFloat(f) }
     | s  = STRING {  Ast.AString(s) }
     | l  = ident {  Ast.AIdent(l) }
+    | TRUE { Ast.ATrue }
+    | FALSE { Ast.AFalse }
 
 call:
     |  i = ident; LEFT_BRACE; a = args; RIGHT_BRACE; { i, a }
 
 matches:
-    | MATCH; l = separated_list(PIPE, mcase); { l }
+    | MATCH; e = expr; l = separated_list(PIPE, mcase); { e, l }
 
 mcase:
     | lhs = expr; RIGHT_ARROW; rhs = expr; { lhs, rhs }
