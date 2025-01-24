@@ -302,7 +302,7 @@ So that works right.
 
 # Codegen
 
-Take the complex ast and convert it into simple lambda calculus terms
+Take the ast and convert it into lambda calculus terms
 
 Consider:
 
@@ -311,4 +311,14 @@ let x(x) = x
 x(y)
 ```
 
-Damn I can really see the compilers are just interpreters argument now.
+- What do we need to be able to do exactly that?
+  
+  - lets say the following lambda gets created: let identity(x) = x
+    and then someone does this: x(10). We want to change that into:
+    (\x.x), and then (x 10), and then ((\x.x) 10) finally getting: 10.
+    So we need to keep track of the abstractions created.
+
+  - Okay now consider let apply_y_to_x(x, y) = y(x). What does this look like in lambda calculus:
+    (\x.\y. y x)
+    So basically, we iterate over the params turning them into lambdas then attach the body to said. But we kinda have a problem, This isn't really possible if you start at the beginning or is it, oh wait it is possible? We just have to make sure that we keep passing in the body, noice.
+

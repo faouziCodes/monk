@@ -40,6 +40,8 @@ rule token =
         | "if" { IF }
         | "else" { ELSE }
         | "elif" { ELSE_IF }
+        | "true" { TRUE }
+        | "false" { FALSE }
         | white { token lexbuf }
         | newline { token lexbuf }
         | int { INT(int_of_string (Lexing.lexeme lexbuf)) } 
