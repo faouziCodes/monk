@@ -8,7 +8,7 @@ and env =
   { gf : ifuncs
   ; gv : ivars
   ; s : scope option
-  ; stdf : (string, std_funcs) Hashtbl.t
+  ; stdf : (string, std_func) Hashtbl.t
   }
 
 and scope =
@@ -27,9 +27,12 @@ and ivalue =
   | IString of string
   | ITrue
   | IFalse
-  | Unit
+  | IUnit
 
-and std_funcs = { c : ivalue list -> ivalue }
+and std_func =
+  { name : string
+  ; call : ivalue list -> ivalue
+  }
 
 type eval_error =
   | NoSuchVar of string
@@ -48,6 +51,16 @@ let ibool_of_bool = function
 ;;
 
 exception EvalError of eval_error
+
+let show_ivalue = function
+  | IInt i -> string_of_int i
+  | ITrue -> "true"
+  | IFalse -> "false"
+  | IUnit -> "()"
+  | IFloat f -> string_of_float f
+  | Iident i -> i
+  | IString i -> "\"" ^ i ^ "\""
+;;
 
 let new_scope p = { p; f = Hashtbl.create 20; v = Hashtbl.create 20 }
 let no_such_func name = raise (EvalError (NoSuchFunc name))
@@ -188,9 +201,19 @@ let eval_less_eq lhs rhs =
 
 let ( ^<= ) = eval_less_eq
 
+let init_env () =
+  { s = None; gf = Hashtbl.create 20; gv = Hashtbl.create 20; stdf = Hashtbl.create 20 }
+;;
+
+let init_interpreter () = { e = init_env () }
+let add_stdf interpreter stdf = Hashtbl.add interpreter.e.stdf stdf.name stdf
+
 let rec eval interpreter ast =
-  let eval' _ = function
-    | _ -> assert false
+  let rec eval' interpreter = function
+    | [] -> ()
+    | node :: nodes ->
+      let interpreter, _ = eval_node interpreter node in
+      eval' interpreter nodes
   in
   eval' interpreter ast
 
@@ -202,13 +225,14 @@ and eval_stmt interpreter = function
   | ALet (name, value) -> eval_let_stmt interpreter name value
   | AFunc func ->
     register_func interpreter.e func;
-    interpreter, Unit
+    interpreter, IUnit
+  | AMatch (value, cases) -> eval_match interpreter (eval_expr interpreter value) cases
 
 and eval_let_stmt interpreter name value =
   try
     let value = eval_expr interpreter value in
     register_var interpreter.e name value;
-    interpreter, Unit
+    interpreter, IUnit
   with
   | EvalError _ -> assert false
 
@@ -217,14 +241,13 @@ and eval_expr interpreter expr =
   | ACall c -> eval_call interpreter c
   | AValue v -> eval_value interpreter v
   | ABinary b -> eval_binary interpreter b
-  | AMatch (value, cases) -> eval_match interpreter (eval_expr interpreter value) cases
   | ABlock b -> eval_block interpreter b
 
 and eval_call interpreter (name, args) =
   match get_std_func interpreter.e name with
   | Some stdf ->
     let args = List.map (eval_expr interpreter) args in
-    stdf.c args
+    stdf.call args
   | None ->
     let _, params, body = find_func interpreter.e name in
     let interpreter = increase_depth interpreter in
@@ -256,15 +279,15 @@ and eval_binary interpreter = function
   | _ -> assert false
 
 and eval_match interpreter value = function
-  | [] -> Unit
+  | [] -> interpreter, IUnit
   | (case, body) :: _ when eval_expr interpreter case = value ->
-    eval_expr interpreter body
+    interpreter, eval_expr interpreter body
   | _ :: cases -> eval_match interpreter value cases
 
 and eval_block interpreter block =
   let interpreter = increase_depth interpreter in
   let rec eval_block' interpreter = function
-    | [] -> Unit
+    | [] -> IUnit
     | [ node ] ->
       let _, body = eval_node interpreter node in
       body

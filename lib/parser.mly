@@ -13,9 +13,10 @@ prog:
     |  l =  list(stmt); EOF; { l }
 
 stmt:
+    | m = matches { Ast.AStmt(m) }
     | f = fn_node { Ast.AStmt(f) }
     | l = let_node { Ast.AStmt(l) }
-    | e = expr; { Ast.AExpr(e) }
+    | e = expr { Ast.AExpr(e) }
 
 let_node:
     | LET; i = ident; EQ; e = expr; { ALet(i, e) }
@@ -27,7 +28,6 @@ expr:
     | l = expr o = op r = expr { ABinary(l, o, r) }
     | v = value { AValue(v) }
     | c = call { ACall(c) }
-    | m = matches { AMatch(m) }
     | b = block { ABlock(b) }
 
 
@@ -43,10 +43,10 @@ call:
     |  i = ident; LEFT_BRACE; a = args; RIGHT_BRACE; { i, a }
 
 matches:
-    | MATCH; e = expr; l = separated_list(PIPE, mcase); { e, l }
+    | MATCH c = expr  l = list(mcase)  { Ast.AMatch(c, l) }
 
 mcase:
-    | lhs = expr; RIGHT_ARROW; rhs = expr; { lhs, rhs }
+    | PIPE lhs = expr; RIGHT_ARROW; rhs = expr; { lhs, rhs }
 
 block:
     | LEFT_CBRACKET; s = list(stmt) ; RIGHT_CBRACKET { s }

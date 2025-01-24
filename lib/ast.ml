@@ -1,3 +1,5 @@
+(**TODO: [Printing] Support depth like in blocks etc. *)
+
 type ast = node list [@@deriving show]
 
 and node =
@@ -8,6 +10,7 @@ and node =
 and astmt =
   | ALet of alet
   | AFunc of afunc
+  | AMatch of amatch
 [@@deriving show]
 
 and paramater = aident [@@deriving show]
@@ -17,7 +20,6 @@ and aexpr =
   | AValue of avalue
   | ACall of acall
   | ABinary of abinary
-  | AMatch of amatch
   | ABlock of ablock
 [@@deriving show]
 
@@ -62,12 +64,12 @@ and string_of_stmt = function
   | ALet (name, value) -> "let " ^ name ^ " = " ^ string_of_expr value
   | AFunc (name, params, value) ->
     "let " ^ name ^ "(" ^ string_of_params params ^ ")" ^ " = " ^ string_of_expr value
+  | AMatch m -> string_of_match m
 
 and string_of_expr = function
   | AValue v -> string_of_value v
   | ACall c -> string_of_call c
   | ABinary b -> string_of_binary b
-  | AMatch m -> string_of_match m
   | ABlock b -> string_of_block b
 
 and string_of_value = function

@@ -12,20 +12,20 @@ let%expect_test "Test parser function" =
   [%expect
     {|
     [(Ast.AStmt
-        (Ast.AFunc ("x", ["a"; "b"],
-           (Ast.ABlock
-              [(Ast.AExpr
-                  (Ast.ABinary
-                     ((Ast.ABinary
-                         ((Ast.AValue (Ast.AIdent "a")), Ast.AMul,
-                          (Ast.AValue (Ast.AIdent "b")))),
-                      Ast.APlus, (Ast.AValue (Ast.AIdent "a")))));
-                (Ast.AExpr
+        (Ast.AFunc
+           ("x", ["a"; "b"],
+            (Ast.ABlock
+               [(Ast.AExpr
                    (Ast.ABinary
-                      ((Ast.AValue (Ast.AIdent "a")), Ast.AMul,
-                       (Ast.AValue (Ast.AIdent "b")))))
-                ])
-           )))
+                      ((Ast.ABinary
+                          ((Ast.AValue (Ast.AIdent "a")), Ast.AMul,
+                           (Ast.AValue (Ast.AIdent "b")))),
+                       Ast.APlus, (Ast.AValue (Ast.AIdent "a")))));
+                 (Ast.AExpr
+                    (Ast.ABinary
+                       ((Ast.AValue (Ast.AIdent "a")), Ast.AMul,
+                        (Ast.AValue (Ast.AIdent "b")))))
+                 ]))))
       ]
     |}]
 ;;
